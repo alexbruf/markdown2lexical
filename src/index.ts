@@ -9,6 +9,9 @@ import {
 
 const app = new Hono();
 
+app.get("/health", (c) => {
+  return c.text("OK");
+});
 app.post("/", async (c) => {
   const { API_KEY } = env<{ API_KEY: string }>(c);
   const bearer = c.req.header("Authorization");
