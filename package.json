@@ -1,0 +1,15 @@
+{
+  "name": "markdown2lexical",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "@lexical/headless": "^0.17.0",
+    "@lexical/markdown": "^0.17.0",
+    "@payloadcms/richtext-lexical": "^0.11.2",
+    "hono": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
