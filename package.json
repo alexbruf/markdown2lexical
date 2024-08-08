@@ -6,12 +6,12 @@
   "dependencies": {
     "@payloadcms/db-postgres": "3.0.0-beta.58",
     "@payloadcms/richtext-lexical": "3.0.0-beta.58",
-    "esbuild": "^0.23.0",
     "hono": "^4.5.4",
     "payload": "3.0.0-beta.58",
     "sharp": "^0.33.4"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "esbuild": "^0.23.0"
   }
 }
