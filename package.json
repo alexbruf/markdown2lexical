@@ -4,10 +4,12 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
-    "@lexical/headless": "^0.17.0",
-    "@lexical/markdown": "^0.17.0",
-    "@payloadcms/richtext-lexical": "^0.11.2",
-    "hono": "^4.5.4"
+    "@payloadcms/db-postgres": "3.0.0-beta.58",
+    "@payloadcms/richtext-lexical": "3.0.0-beta.58",
+    "esbuild": "^0.23.0",
+    "hono": "^4.5.4",
+    "payload": "3.0.0-beta.58",
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "@types/bun": "latest"

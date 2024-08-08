@@ -20,17 +20,17 @@ RUN cd /temp/prod && bun install --frozen-lockfile --production
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
-
-RUN bun build ./src/index.ts --target bun --outdir ./out --external lexical --external @lexical/headless --external @lexical/markdown --external sharp
-
+RUN node_modules/.bin/esbuild src/index.ts --bundle --platform=node --outfile=index.js --format=esm
+RUN bun build index.js --compile --outfile=markdown2lexical 
 
 # copy production dependencies and source code into final image
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-RUN bun add sharp
-COPY --from=prerelease /usr/src/app/out out
+FROM oven/bun:distroless AS release
+COPY --from=prerelease /usr/src/app/markdown2lexical .
 COPY --from=prerelease /usr/src/app/package.json .
+COPY --from=prerelease /usr/src/app/src/healthcheck.ts .
 
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "bun", "run", "healthcheck.ts" ]
 # run the app
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "out/index.js" ]
+ENTRYPOINT [ "./markdown2lexical" ]

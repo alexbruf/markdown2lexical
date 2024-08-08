@@ -3,9 +3,31 @@ import { env } from "hono/adapter";
 import { $convertFromMarkdownString, TRANSFORMERS } from "@lexical/markdown";
 import { createHeadlessEditor } from "@lexical/headless";
 import {
+  defaultEditorConfig,
   getEnabledNodes,
-  sanitizeEditorConfig,
+  sanitizeServerEditorConfig,
 } from "@payloadcms/richtext-lexical";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { buildConfig } from "payload";
+
+const configPromise = buildConfig({
+  //editor: slateEditor({}),
+  editor: lexicalEditor(),
+  secret: "fakeSecret",
+
+  db: {} as any,
+  // db: mongooseAdapter({
+  //   url: process.env.MONGODB_URI || "",
+  // }),
+
+  admin: {},
+  // Sharp is now an optional dependency -
+  // if you want to resize images, crop, set focal point, etc.
+  // make sure to install it and pass it to the config.
+
+  // This is temporary - we may make an adapter pattern
+  // for this before reaching 3.0 stable
+});
 
 const app = new Hono();
 
@@ -25,20 +47,28 @@ app.post("/", async (c) => {
     return c.text("Bad Request", 400);
   }
 
+  const yourSanitizedEditorConfig = await sanitizeServerEditorConfig(
+    defaultEditorConfig,
+    await configPromise,
+  );
+
   const headlessEditor = createHeadlessEditor({
     nodes: getEnabledNodes({
-      editorConfig: sanitizeEditorConfig({ features: [] }),
-    }) as any,
+      editorConfig: yourSanitizedEditorConfig,
+    }),
   });
+
   headlessEditor.update(
     () => {
-      $convertFromMarkdownString(body, TRANSFORMERS);
+      $convertFromMarkdownString(
+        body,
+        yourSanitizedEditorConfig.features.markdownTransformers,
+      );
     },
     { discrete: true },
   );
-
-  // Do this if you then want to get the editor JSON
   const editorJSON = headlessEditor.getEditorState().toJSON();
+
   return c.json(editorJSON);
 });
 
