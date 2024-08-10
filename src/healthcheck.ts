@@ -1,5 +1,5 @@
-function main() {
-  fetch("http://localhost:3000/health")
+async function main() {
+  return fetch("http://localhost:3000/health")
     .then((r) => {
       if (r.status !== 200) {
         throw new Error("Health check failed");
@@ -7,6 +7,7 @@ function main() {
       if (!r.ok) {
         throw new Error("Health check failed");
       }
+			console.log("Health check passed");
       process.exit(0);
     })
     .catch((e) => {
@@ -14,4 +15,4 @@ function main() {
       process.exit(1);
     });
 }
-main()
+main().then(() => {}).catch(console.log);
