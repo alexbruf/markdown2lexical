@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "markdown2lexical",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "alias": {
+    "file-type": "./src/stubs/file-type.ts"
+  },
+  "define": {
+    "import.meta.url": "\"file:///worker.js\""
+  }
+}

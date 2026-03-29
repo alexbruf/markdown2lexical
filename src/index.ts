@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { env } from "hono/adapter";
-import { $convertFromMarkdownString, TRANSFORMERS } from "@lexical/markdown";
+import { $convertFromMarkdownString } from "@lexical/markdown";
 import { createHeadlessEditor } from "@lexical/headless";
 import {
   defaultEditorConfig,
@@ -10,23 +10,40 @@ import {
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 
+// Workers-compatible logger (replaces pino)
+const createLog =
+  (level: string, fn: typeof console.log) =>
+  (objOrMsg: object | string, msg?: string) => {
+    if (typeof objOrMsg === "string") {
+      fn(JSON.stringify({ level, msg: objOrMsg }));
+    } else {
+      fn(
+        JSON.stringify({
+          level,
+          ...objOrMsg,
+          msg: msg ?? (objOrMsg as { msg?: string }).msg,
+        })
+      );
+    }
+  };
+
+const cloudflareLogger = {
+  level: "info",
+  trace: createLog("trace", console.debug),
+  debug: createLog("debug", console.debug),
+  info: createLog("info", console.log),
+  warn: createLog("warn", console.warn),
+  error: createLog("error", console.error),
+  fatal: createLog("fatal", console.error),
+  silent: () => {},
+} as any;
+
 const configPromise = buildConfig({
-  //editor: slateEditor({}),
   editor: lexicalEditor(),
   secret: "fakeSecret",
-
   db: {} as any,
-  // db: mongooseAdapter({
-  //   url: process.env.MONGODB_URI || "",
-  // }),
-
   admin: {},
-  // Sharp is now an optional dependency -
-  // if you want to resize images, crop, set focal point, etc.
-  // make sure to install it and pass it to the config.
-
-  // This is temporary - we may make an adapter pattern
-  // for this before reaching 3.0 stable
+  logger: cloudflareLogger,
 });
 
 const app = new Hono();
@@ -34,6 +51,7 @@ const app = new Hono();
 app.get("/health", (c) => {
   return c.text("OK");
 });
+
 app.post("/", async (c) => {
   const { API_KEY } = env<{ API_KEY: string }>(c);
   const bearer = c.req.header("Authorization");
