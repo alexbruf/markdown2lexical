@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "markdown2lexical",
+  "account_id": "26108e3201e299582e4f6df2912f0b19",
   "main": "src/index.ts",
   "compatibility_date": "2025-08-15",
   "compatibility_flags": ["nodejs_compat"],
