@@ -5,10 +5,14 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-08-15",
   "compatibility_flags": ["nodejs_compat"],
+  "route": {
+    "custom_domain": true,
+    "pattern": "markdown2lexical.bruf.io",
+  },
   "alias": {
-    "file-type": "./src/stubs/file-type.ts"
+    "file-type": "./src/stubs/file-type.ts",
   },
   "define": {
-    "import.meta.url": "\"file:///worker.js\""
-  }
+    "import.meta.url": "\"file:///worker.js\"",
+  },
 }
